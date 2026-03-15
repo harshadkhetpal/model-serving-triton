@@ -1,0 +1,4 @@
+tritonclient[all]>=2.44.0
+numpy>=1.26.0
+onnxruntime-gpu>=1.17.0
+torch:=2.2.0
