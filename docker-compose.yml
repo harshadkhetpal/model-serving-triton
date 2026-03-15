@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  triton:
+    image: nvcr.io/nvidia/tritonserver:24.01-py3
+    command: tritonserver --model-repository=/models --log-verbose=1 --allow-gpu-metrics=true
+    volumes:
+      - ./model_repository:/models
+    ports:
+      - "8000:8000"   # HTTP
+      - "8001:8001"   # gRPC
+      - "8002:8002"   # Metrics
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    volumes: ["./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml"]
+    ports: ["9090:9090"]
