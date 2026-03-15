@@ -1,0 +1,38 @@
+name: "fraud_model"
+backend: "onnxruntime"
+max_batch_size: 256
+
+input [
+  {
+    name: "features"
+    data_type: TYPE_FP32
+    dims: [30]
+  }
+]
+output [
+  {
+    name: "fraud_probability"
+    data_type: TYPE_FP32
+    dims: [1]
+  },
+  {
+    name: "prediction"
+    data_type: TYPE_INT64
+    dims: [1]
+  }
+]
+
+dynamic_batching {
+  preferred_batch_size: [32, 64, 128, 256]
+  max_queue_delay_microseconds: 5000
+}
+
+instance_group [
+  { kind: KIND_GPU, count: 2 }
+]
+
+optimization {
+  execution_accelerators {
+    gpu_execution_accelerator: [{ name: "tensorrt", parameters { key: "precision_mode", value: "FP16" } }]
+  }
+}
